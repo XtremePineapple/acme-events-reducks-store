@@ -7,7 +7,7 @@ const Event = conn.define('event', {
     type: Sequelize.STRING,
     allowNull: false,
     validate: { notEmpty: true }
-  },
+  }, 
   date: {
     type: Sequelize.DATE,
     allowNull: false
@@ -17,10 +17,11 @@ const Event = conn.define('event', {
 
 Event.createRandom = function(){ return Event.create({ name: `${faker.lorem.sentences(1)} - ${faker.address.state()}`, date: faker.date.future() }); }
 
+const events = [];
+
 const syncAndSeed = async () =>{
-conn.sync({ force: true })
+  conn.sync({ force: true })
   .then(()=> {
-    const events = [];
     while(events.length < 10){
       events.push(Event.createRandom());
     }
@@ -28,7 +29,13 @@ conn.sync({ force: true })
   });
 }
 
-module.exports ={
+const createOne = async () => {
+  events.push(Event.createRandom());
+  return Promise.all(events);
+}
+
+module.exports = {
+    createOne,
     syncAndSeed, 
     models: {
       Event

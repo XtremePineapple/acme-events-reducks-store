@@ -1,5 +1,5 @@
 <html>
-  <head>
+  <head> 
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
@@ -28,6 +28,18 @@ a {
   <body>
     <div id='root'></div>
     <script type='text/babel'>
+
+    const { createStore, combineReducers } = Redux 
+    const db = require('./db');
+
+    const reducer = combineReducers({
+      events: ( state = [], action) => {
+        if(action.type === 'ADD_EVENT'){
+          state = [...state, action.event]
+        }
+        return state
+      }
+    });
 
 
 
@@ -69,16 +81,19 @@ a {
       
       return(
         <div>
-        <ul>{
+          <ul>{
             events.map((event,i) => <li key={i}>{event.name}</li>)
-        }</ul>
+          } </ul>s
+          <form>
+            <button onClick = {addEvent}>Create</button>
+          </form>
         </div>
       )
       }
     }
 
 
-      ReactDOM.render(<App />, document.querySelector('#root'));
+    ReactDOM.render(<App />, document.querySelector('#root'));
 
     </script>
   </body>
