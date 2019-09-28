@@ -1,0 +1,1 @@
+const party = 1
