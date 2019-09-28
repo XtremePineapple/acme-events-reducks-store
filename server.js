@@ -1,35 +1,13 @@
-const faker = require('faker');
-faker.locale = 'en_US';
-const Sequelize = require('sequelize');
-const conn = new Sequelize(process.env.DATABASE_URL || 'postgres://localhost/acme_event_store_db');
-const Event = conn.define('event', {
-  name: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    validate: { notEmpty: true }
-  },
-  date: {
-    type: Sequelize.DATE,
-    allowNull: false
-  }
-});
-
-Event.createRandom = function(){ return Event.create({ name: `${faker.lorem.sentences(1)} - ${faker.address.state()}`, date: faker.date.future() }); }
-
-conn.sync({ force: true })
-  .then(()=> {
-    const events = [];
-    while(events.length < 10){
-      events.push(Event.createRandom());
-    }
-    return Promise.all(events);
-  });
 
 const path = require('path');
 const express = require('express');
 const app = express();
+const db = require('./db');
+const { Event } = db.models;
 const port = process.env.PORT || 3000;
-app.listen(port);
+
+
+    
 
 app.get('/', (req, res, next)=> res.sendFile(path.join(__dirname, 'index.html')));
 
@@ -51,3 +29,9 @@ app.delete('/api/events/:id', (req, res, next)=> {
     .then(()=> res.sendStatus(204))
     .catch(next);
 });
+
+
+db.syncAndSeed()
+    .then(() => {
+        app.listen(port, () => console.log(`listening on port ${port}`))
+    })
