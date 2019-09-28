@@ -30,7 +30,6 @@ a {
     <script type='text/babel'>
 
     const { createStore, combineReducers } = Redux 
-    const db = require('./db');
 
     const reducer = combineReducers({
       events: ( state = [], action) => {
@@ -42,6 +41,22 @@ a {
     });
 
 
+    const Events = connect(({ events }) => {
+                    return(
+                        <div>
+                            <button onClick={AddEvent}>Add</button>
+                            <ul>
+                            {
+                                events.map(event => <li key={event.id}>{event.name}</li>)
+                            }
+                            </ul>
+                        </div>
+                    )
+                });
+
+    const AddEvent = async () =>{
+      store.dispatch(events: (await axios('api/events')).data)
+    }
 
       const connect = (Component)=> {
         class Connected extends React.Component{
@@ -64,11 +79,21 @@ a {
         return Connected;
       }
 
+      const Nav = connect(({ Home, Events }) => {//cnnectecComponent
+              return(
+                  <nav>
+                      <Link to='/events'>Events({ events.length })</Link>
+                      <Link to='/home'>Home({ bars.length })</Link>
+                  </nav>
+                  );
+          })
+
+      const { HashRouter, Route, Link  } = ReactRouterDOM; 
       class App extends React.Component{
           constructor(){
               super();
               this.state = {
-                  events : []
+                  Events : []
               }
           }
           async componentDidMount(){
@@ -76,19 +101,18 @@ a {
           }
       
 
+
+
       render(){
           const { events } = this.state
       
-      return(
-        <div>
-          <ul>{
-            events.map((event,i) => <li key={i}>{event.name}</li>)
-          } </ul>s
-          <form>
-            <button onClick = {addEvent}>Create</button>
-          </form>
-        </div>
-      )
+          return(
+                  <HashRouter>
+                      <Route component={ Nav } />
+                      <Route path='/events' component={ events } />
+                      <Route path='/home' component={ Home } />
+                  </HashRouter>
+                    )
       }
     }
 
